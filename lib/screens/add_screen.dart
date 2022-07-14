@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:webfeed/webfeed.dart';
 
 class AddScreen extends StatelessWidget {
   String name = "null string";
+  String stroke = "lmso shit luck";
+  RssFeed? resp;
   final _formKey = GlobalKey<FormState>();
-
 
   OutlineInputBorder _inputformdeco() {
     return OutlineInputBorder(
@@ -15,6 +18,15 @@ class AddScreen extends StatelessWidget {
     );
   }
 
+  Future<bool> checkURL() async {
+    final client = http.Client();
+    final respo = await client.get(Uri.parse(name));
+    // return (RssFeed.parse(response) == '200');
+    int key = respo.statusCode;
+    stroke = "$key";
+    return true;
+  }
+
   Future<void> _savingData() async {
     final form = _formKey.currentState;
     if (form != null && !form.validate()) {
@@ -22,7 +34,7 @@ class AddScreen extends StatelessWidget {
     }
     form?.save();
 
-    //     final validation = _formKey.currentState.validate();
+    // final validation = _formKey.currentState.validate();
     // if (!validation) {
     //   return;
     // }
@@ -39,14 +51,12 @@ class AddScreen extends StatelessWidget {
         elevation: 0,
         // backgroundColor: Colors.transparent,
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 0),
-            Container(
+            SizedBox(
               width: 350,
               child: Form(
                 key: _formKey,
@@ -64,10 +74,11 @@ class AddScreen extends StatelessWidget {
             TextButton(
                 onPressed: () async {
                   _savingData();
+                  final isURL = checkURL();
                   final url = "http://10.0.2.2:5000/name";
 
                   final response = http.post(Uri.parse(url),
-                      body: json.encode({'name': name}));
+                      body: json.encode({'name': stroke}));
                 },
                 //  style: const ButtonStyle(
                 //    TextStyle(fontSize: 16, color: Colors.blue),
