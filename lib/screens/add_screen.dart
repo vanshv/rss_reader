@@ -4,27 +4,37 @@ import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webfeed/webfeed.dart';
 
-class AddScreen extends StatelessWidget {
+class AddScreen extends StatefulWidget {
+  @override
+  State<AddScreen> createState() => _AddScreenState();
+}
+
+class _AddScreenState extends State<AddScreen> {
   String name = "null string";
+
   String stroke = "lmso shit luck";
+
   RssFeed? resp;
+
   final _formKey = GlobalKey<FormState>();
 
   OutlineInputBorder _inputformdeco() {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(20.0),
       borderSide:
-          BorderSide(width: 1.0, color: Colors.blue, style: BorderStyle.solid),
+          const BorderSide(width: 1.0, color: Colors.blue, style: BorderStyle.solid),
     );
   }
 
-  Future<bool> checkURL() async {
-    final client = http.Client();
-    final respo = await client.get(Uri.parse(name));
-    // return (RssFeed.parse(response) == '200');
-    int key = respo.statusCode;
-    stroke = "$key";
-    return true;
+  Future<bool> isNotURL() async {
+    try {
+      final client = http.Client();
+      final respo = await client.get(Uri.parse(name));
+      return (respo.statusCode != 200);
+    } on Exception catch (_) {
+      // print(s);
+      return true;
+    }
   }
 
   Future<void> _savingData() async {
@@ -33,13 +43,6 @@ class AddScreen extends StatelessWidget {
       return;
     }
     form?.save();
-
-    // final validation = _formKey.currentState.validate();
-    // if (!validation) {
-    //   return;
-    // }
-
-    // _formKey.currentState.save();
   }
 
   @override
@@ -74,11 +77,23 @@ class AddScreen extends StatelessWidget {
             TextButton(
                 onPressed: () async {
                   _savingData();
-                  final isURL = checkURL();
-                  final url = "http://10.0.2.2:5000/name";
+                  final tttt = await isNotURL();
+                  if (tttt) {
+                    // if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("URL given is not a valid RSS FEED"),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    return;
+                  }
 
-                  final response = http.post(Uri.parse(url),
-                      body: json.encode({'name': stroke}));
+                  const url = "http://10.0.2.2:5000/name";
+
+                  http.post(Uri.parse(url), body: json.encode({'name': name}));
+                  // if (!mounted) return;
+                  // Navigator.of(context).pop();
                 },
                 //  style: const ButtonStyle(
                 //    TextStyle(fontSize: 16, color: Colors.blue),
