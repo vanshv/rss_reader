@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:rss_reader/screens/welcome.dart';
+import 'screens/dashboard.dart';
+import 'screens/welcome.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,7 +19,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomePage(),
+      // home: HomePage(), switch to this to bypass authentication
+      home: const Welcome(),
+      builder: EasyLoading.init(),
     );
   }
 }

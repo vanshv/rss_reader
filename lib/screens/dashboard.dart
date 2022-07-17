@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'add_screen.dart';
+import 'add_feed.dart';
 
-class HomePage extends StatefulWidget {
+class Dashboard extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _DashboardState createState() => _DashboardState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _DashboardState extends State<Dashboard> {
   String name = "";
   String finalResponse = "null string";
   final _formKey = GlobalKey<FormState>();
@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
         child: const Icon(Icons.add),
         onPressed: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => AddScreen()));
+              context, MaterialPageRoute(builder: (context) => AddFeed()));
         },
       ),
       body: Container(

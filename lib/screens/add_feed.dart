@@ -4,12 +4,14 @@ import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webfeed/webfeed.dart';
 
-class AddScreen extends StatefulWidget {
+class AddFeed extends StatefulWidget {
+  const AddFeed({Key? key}) : super(key: key);
+
   @override
-  State<AddScreen> createState() => _AddScreenState();
+  State<AddFeed> createState() => _AddFeedState();
 }
 
-class _AddScreenState extends State<AddScreen> {
+class _AddFeedState extends State<AddFeed> {
   String name = "null string";
 
   String stroke = "lmso shit luck";
