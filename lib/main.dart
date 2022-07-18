@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:rss_reader/screens/welcome.dart';
-import 'screens/dashboard.dart';
 import 'screens/welcome.dart';
 
 void main() {

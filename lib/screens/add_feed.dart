@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:webfeed/webfeed.dart';
 
 class AddFeed extends StatefulWidget {
@@ -81,7 +80,7 @@ class _AddFeedState extends State<AddFeed> {
                   _savingData();
                   final tttt = await isNotURL();
                   if (tttt) {
-                    // if (!mounted) return;
+                    //replace this with easyloading
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("URL given is not a valid RSS FEED"),

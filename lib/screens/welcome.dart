@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login.dart';
 import 'register.dart';
-import 'dashboard.dart';
 
 class Welcome extends StatefulWidget {
   const Welcome({Key? key}) : super(key: key);
@@ -34,7 +33,7 @@ class _WelcomeState extends State<Welcome> {
             TextButton(
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Dashboard()));
+                      MaterialPageRoute(builder: (context) => const Register()));
                 },
                 child: const Text('Register',
                     style: TextStyle(fontSize: 17, color: Colors.blue))),

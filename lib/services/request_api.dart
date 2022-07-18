@@ -5,6 +5,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:rss_reader/screens/dashboard.dart';
+import 'package:rss_reader/screens/login.dart';
 
 class RequestAPI{
   static final _client = http.Client();
@@ -22,7 +23,7 @@ class RequestAPI{
 
       if(jsoned[0] == 'success'){
         EasyLoading.showSuccess(jsoned[0]);
-        Navigator.push(context, MaterialPageRoute(builder: (context) => Dashboard()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const Dashboard()));
       }
       else{
         EasyLoading.showError(jsoned[0]);
@@ -43,9 +44,9 @@ class RequestAPI{
     if(respo.statusCode == 200){
       var jsoned = jsonDecode(respo.body);
 
-      if(jsoned[0] != 'username already exists'){
+      if(jsoned[0] == 'Register success'){
         EasyLoading.showSuccess(jsoned[0]);
-        Navigator.push(context, MaterialPageRoute(builder: (context) => Dashboard()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()));
       }
       else{
         EasyLoading.showError(jsoned[0]);
