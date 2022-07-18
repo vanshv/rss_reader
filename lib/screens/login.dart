@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'register.dart';
-import 'dashboard.dart';
+import '../services/request_api.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -28,34 +27,30 @@ class _LoginState extends State<Login> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
-              decoration: const InputDecoration(
-                hintText: 'Enter Username'
-              ),
-              onChanged: (value) {
-                setState(() {
-                  username = value;
-                });
-              }
-            ),
+                decoration: const InputDecoration(hintText: 'Enter Username'),
+                onChanged: (value) {
+                  //try removing setstate, it might not be needed
+                  setState(() {
+                    username = value;
+                  });
+                }),
             TextField(
-              decoration: const InputDecoration(
-                hintText: 'Enter Password'
-              ),
-              onChanged: (value) {
-                setState(() {
-                  password = value;
-                });
-              }
-            ),
+                obscureText: true,
+                decoration: const InputDecoration(hintText: 'Enter Password'),
+                onChanged: (value) {
+                  setState(() {
+                    password = value;
+                  });
+                }),
             TextButton(
-              onPressed: () async {
-
+                onPressed: () async {
+                  await RequestAPI.login(username, password, context);
                 },
-              child: const Text('Login',
-                style: TextStyle(
-                  fontSize: 17,
-                  // fontWeight: FontWeight.bold,
-                  color: Colors.blue)))
+                child: const Text('Login',
+                    style: TextStyle(
+                        fontSize: 17,
+                        // fontWeight: FontWeight.bold,
+                        color: Colors.blue)))
           ],
         ),
       ),
