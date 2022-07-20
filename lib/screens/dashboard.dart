@@ -27,7 +27,7 @@ class _DashboardState extends State<Dashboard> {
         child: const Icon(Icons.add),
         onPressed: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => AddFeed()));
+              context, MaterialPageRoute(builder: (context) => const AddFeed()));
         },
       ),
       body: SizedBox(

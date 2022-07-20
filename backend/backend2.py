@@ -1,10 +1,14 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, sessions
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin, login_user, LoginManager
+from flask_login import UserMixin, login_required, login_user, LoginManager
+from requests import session
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length
 from flask_bcrypt import Bcrypt
 from flask_wtf import FlaskForm
+from sqlalchemy import Column, ForeignKey, Integer, Table
+from sqlalchemy.orm import declarative_base, relationship
+
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -21,31 +25,18 @@ def load_user(userId):
     return User.query.get(int(userId))
 
 class User(db.Model, UserMixin):
+    __tablename__ = "User"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
-# class RegisterForm(FlaskForm):
-#     username = StringField(validators=[InputRequired(), Length(
-#         min=4, max=20)], render_kw={"placeholder": "Username"})
-#     password = PasswordField(validators=[InputRequired(), Length(
-#         min=4, max=20)], render_kw={"placeholder": "Password"})
-#     submit = SubmitField("Register")
+    children = relationship("Feeds")
 
-#     def validate_username(self, username):
-#         isExistingUserName = User.query.filter_by(
-#             username=username.data).first()
-#         if isExistingUserName:
-#             return jsonify(["username already exists"])
-        
-    # check this
-    # validate_username(username)
+class Feeds(db.Model, UserMixin):
+    __tablename__ = "Feeds"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), ForeignKey("User.username"), nullable=False)
+    feed = db.Column(db.String(40), nullable=False)
 
-# class LoginForm(FlaskForm):
-#     username = StringField(validators=[InputRequired(), Length(
-#         min=4, max=20)], render_kw={"placeholder": "Username"})
-#     password = PasswordField(validators=[InputRequired(), Length(
-#         min=4, max=20)], render_kw={"placeholder": "Password"})
-#     submit = SubmitField("Login")
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -62,7 +53,6 @@ def login():
             else:
                 return jsonify(["Wrong password"])
     
-    
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -76,6 +66,20 @@ def register():
         return jsonify(["Register success"])
     else:
         return jsonify(["Registration failed"])
+    
+    
+@app.route('/addfeed', methods=['GET', 'POST'])
+@login_required
+#something to do with this login
+def addfeed():
+    if request.method == "POST":
+        ffeed = request.form['feed']
+        uname = session['username']
+        newFeed = Feeds(username = uname, feed = ffeed)
+        db.session.add(newFeed)
+        db.session.commit()
+        return jsonify(["AddFeed success"])
+    return jsonify(["AddFeed failure"])
 
 if __name__ == "__main__":
     app.run(debug=True)

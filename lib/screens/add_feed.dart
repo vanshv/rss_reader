@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:webfeed/webfeed.dart';
+
+import '../services/request_api.dart';
 
 class AddFeed extends StatefulWidget {
   const AddFeed({Key? key}) : super(key: key);
@@ -11,46 +13,14 @@ class AddFeed extends StatefulWidget {
 }
 
 class _AddFeedState extends State<AddFeed> {
-  String name = "null string";
+  String feed = "null string";
 
-  String stroke = "lmso shit luck";
-
-  RssFeed? resp;
-
-  final _formKey = GlobalKey<FormState>();
-
-  OutlineInputBorder _inputformdeco() {
-    return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(20.0),
-      borderSide:
-          const BorderSide(width: 1.0, color: Colors.blue, style: BorderStyle.solid),
-    );
-  }
-
-  Future<bool> isNotURL() async {
-    try {
-      final client = http.Client();
-      final respo = await client.get(Uri.parse(name));
-      return (respo.statusCode != 200);
-    } on Exception catch (_) {
-      // print(s);
-      return true;
-    }
-  }
-
-  Future<void> _savingData() async {
-    final form = _formKey.currentState;
-    if (form != null && !form.validate()) {
-      return;
-    }
-    form?.save();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Send POST requests here"),
+        title: const Text("Add RSS Feed here"),
         centerTitle: true,
         elevation: 0,
         // backgroundColor: Colors.transparent,
@@ -62,44 +32,19 @@ class _AddFeedState extends State<AddFeed> {
           children: [
             SizedBox(
               width: 350,
-              child: Form(
-                key: _formKey,
-                child: TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Enter Post Request',
-                      enabledBorder: _inputformdeco(),
-                      focusedBorder: _inputformdeco(),
-                    ),
-                    onSaved: (value) {
-                      name = value ?? "";
-                    }),
-              ),
+              child: TextFormField(
+                  decoration:
+                      const InputDecoration(labelText: 'Enter RSS Feed Request'),
+                  onSaved: (value) {
+                    feed = value ?? "";
+                  }),
             ),
             TextButton(
                 onPressed: () async {
-                  _savingData();
-                  final tttt = await isNotURL();
-                  if (tttt) {
-                    //replace this with easyloading
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("URL given is not a valid RSS FEED"),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                    return;
-                  }
+                  await RequestAPI.addfeed(feed, context);
 
-                  const url = "http://10.0.2.2:5000/name";
-
-                  http.post(Uri.parse(url), body: json.encode({'name': name}));
-                  // if (!mounted) return;
-                  // Navigator.of(context).pop();
                 },
-                //  style: const ButtonStyle(
-                //    TextStyle(fontSize: 16, color: Colors.blue),
-                //  ),
-                child: const Text('Send POST Request',
+                child: const Text('Add RSS Feed',
                     style: TextStyle(
                         fontSize: 17,
                         // fontWeight: FontWeight.bold,

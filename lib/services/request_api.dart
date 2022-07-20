@@ -11,6 +11,7 @@ class RequestAPI{
   static final _client = http.Client();
   static final _loginUrl = Uri.parse("http://10.0.2.2:5000/login");
   static final _registerUrl = Uri.parse("http://10.0.2.2:5000/register");
+  static final _addFeedUrl = Uri.parse("http://10.0.2.2:5000/addfeed");
 
   static login(username, password, context) async{
     http.Response respo = await _client.post(_loginUrl, body:{
@@ -58,5 +59,24 @@ class RequestAPI{
     }
   }
 
+  static addfeed(feed, context) async {
+    http.Response respo = await _client.post(_addFeedUrl, body:{
+      "feed": feed
+    });
 
+    if(respo.statusCode == 200){
+      var jsoned = jsonDecode(respo.body);
+
+      if(jsoned[0] == 'Register success'){
+        EasyLoading.showSuccess(jsoned[0]);
+      }
+      else{
+        EasyLoading.showError(jsoned[0]);
+      }
+    }
+    else{
+      EasyLoading.showError(
+        "Error Code : ${respo.statusCode.toString()}");
+    }
+  }
 }
