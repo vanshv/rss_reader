@@ -35,8 +35,8 @@ class _AddFeedState extends State<AddFeed> {
               child: TextFormField(
                   decoration:
                       const InputDecoration(labelText: 'Enter RSS Feed Request'),
-                  onSaved: (value) {
-                    feed = value ?? "";
+                  onChanged: (value) {
+                    feed = value;
                   }),
             ),
             TextButton(

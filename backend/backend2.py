@@ -1,13 +1,9 @@
-from flask import Flask, jsonify, request, sessions
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin, login_required, login_user, LoginManager
-from requests import session
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import InputRequired, Length
+from flask_login import UserMixin, current_user, login_user, LoginManager, current_user
 from flask_bcrypt import Bcrypt
-from flask_wtf import FlaskForm
-from sqlalchemy import Column, ForeignKey, Integer, Table
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 
 
 app = Flask(__name__)
@@ -21,18 +17,24 @@ loginManager.init_app(app)
 loginManager.login_view = "login"
 
 @loginManager.user_loader
-def load_user(userId):
-    return User.query.get(int(userId))
+def load_user(user_id):
+    try:
+        return User.query.get(user_id)
+    except:
+        return None
+
+def get_current_user():
+    return current_user
 
 class User(db.Model, UserMixin):
     __tablename__ = "User"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
-    children = relationship("Feeds")
+    children = relationship("Feed")
 
-class Feeds(db.Model, UserMixin):
-    __tablename__ = "Feeds"
+class Feed(db.Model):
+    __tablename__ = "Feed"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), ForeignKey("User.username"), nullable=False)
     feed = db.Column(db.String(40), nullable=False)
@@ -48,7 +50,7 @@ def login():
             return jsonify(["no user found"])
         else:
             if bcrypt.check_password_hash(user.password, pword):
-                login_user(user)
+                login_user(user, remember=True)
                 return jsonify(["success"])
             else:
                 return jsonify(["Wrong password"])
@@ -69,17 +71,19 @@ def register():
     
     
 @app.route('/addfeed', methods=['GET', 'POST'])
-@login_required
-#something to do with this login
 def addfeed():
     if request.method == "POST":
         ffeed = request.form['feed']
-        uname = session['username']
-        newFeed = Feeds(username = uname, feed = ffeed)
+        uname = request.form['username']
+        feed = Feed.query.filter_by(username=uname, feed=ffeed).first()
+        if feed is not None:
+            return jsonify(["feed already added"])
+        newFeed = Feed(username = uname, feed = ffeed)
         db.session.add(newFeed)
         db.session.commit()
         return jsonify(["AddFeed success"])
-    return jsonify(["AddFeed failure"])
+    else:
+        return jsonify(["AddFeed failure"])
 
 if __name__ == "__main__":
     app.run(debug=True)
