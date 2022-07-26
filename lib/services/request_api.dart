@@ -12,6 +12,7 @@ class RequestAPI {
   static final _loginUrl = Uri.parse("http://10.0.2.2:5000/login");
   static final _registerUrl = Uri.parse("http://10.0.2.2:5000/register");
   static final _addFeedUrl = Uri.parse("http://10.0.2.2:5000/addfeed");
+  static final _getAllFeedUrl = Uri.parse("http://10.0.2.2:5000/getallfeeds");
   static String loggedinuser = "null user";
 
   static login(username, password, context) async {
@@ -71,6 +72,19 @@ class RequestAPI {
       } else {
         EasyLoading.showError(jsoned[0]);
       }
+    } else {
+      EasyLoading.showError("Error Code : ${respo.statusCode.toString()}");
+    }
+  }
+
+  static getallfeeds(context) async {
+    http.Response respo = await _client.post(_getAllFeedUrl, body: {
+      "username": loggedinuser
+    });
+
+    if (respo.statusCode == 200) {
+      final decoded = json.decode(respo.body) as Map<String, dynamic>;
+      return decoded;
     } else {
       EasyLoading.showError("Error Code : ${respo.statusCode.toString()}");
     }

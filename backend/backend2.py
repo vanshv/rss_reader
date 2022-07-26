@@ -4,7 +4,7 @@ from flask_login import UserMixin, current_user, login_user, LoginManager, curre
 from flask_bcrypt import Bcrypt
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-
+import feedparser
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -84,6 +84,42 @@ def addfeed():
         return jsonify(["AddFeed success"])
     else:
         return jsonify(["AddFeed failure"])
+    
+def retdate(item):
+    return item['published_parsed'];
+    
+@app.route('/getallfeeds', methods=['GET', 'POST'])
+def getallfeeds():
+    if request.method == "POST":
+        uname = request.form['username']
+        feedObjects = Feed.query.filter_by(username=uname)
+        
+        first = 'https://rss.art19.com/apology-line'
+        all = feedparser.parse(first)
+        
+        urlStrings = []
+        for feedObject in feedObjects:
+            urlStrings.append(feedObject.feed)
+       
+        rssFeeds = [] 
+        for urlString in urlStrings:
+            rssFeeds.append(feedparser.parse(urlString))
+
+        for rssFeed in rssFeeds:
+            for rssItem in rssFeed.entries:
+                all.entries.append(rssItem)
+                
+        all.entries.sort(key=retdate)
+        
+        count = 0;
+        for item in all.entries:
+            count += 1
+        all["itemcount"] = count
+        
+        return jsonify(all)
+            
+    else:
+        return jsonify(["GetAllFeed failure"])
 
 if __name__ == "__main__":
     app.run(debug=True)

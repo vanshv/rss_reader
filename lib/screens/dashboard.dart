@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:rss_reader/services/request_api.dart';
 import 'dart:convert';
 import 'add_feed.dart';
 
@@ -11,14 +12,13 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  String name = "";
-  String finalResponse = "null string";
+  late Map allfeeds;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Display GET Posts here'),
+        title: const Text('Display all feeds here'),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.blue,
@@ -26,34 +26,62 @@ class _DashboardState extends State<Dashboard> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => const AddFeed()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const AddFeed()));
         },
       ),
-      body: SizedBox(
-        width: double.infinity,
+      body: Padding(
+        padding: const EdgeInsets.all(15),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            FlatButton(
-              onPressed: () async {
-                const url = "http://10.0.2.2:5000/name";
-                final response = await http.get(Uri.parse(url));
-                final decoded =
-                    json.decode(response.body) as Map<String, dynamic>;
-
-                setState(() {
-                  finalResponse = decoded['name'];
-                });
+            TextButton(
+                onPressed: () async {
+                  allfeeds = await RequestAPI.getallfeeds(context);
+                },
+                child: const Text('Get Feeds',
+                    style: TextStyle(
+                        fontSize: 17,
+                        // fontWeight: FontWeight.bold,
+                        color: Colors.blue))),
+            ListView.builder(
+              itemCount: allfeeds['itemcount'],
+              itemBuilder: (BuildContext context, int index) {
+                final item = allfeeds.entries.elementAt(index);
+                return ListTile(
+                  title: Text(
+                    item["title"],
+                    style:
+                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(
+                    item.subtitle,
+                    style:
+                        TextStyle(fontSize: 14.0, fontWeight: FontWeight.w100),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: CachedNetworkImage(
+                      placeholder: (context, url) => Image.asset(placeholderImg),
+                      imageUrl: item.enclosure.url,
+                      height: 50,
+                      width: 70,
+                      alignment: Alignment.center,
+                      fit: BoxFit.fill,         
+                    ),
+                  ),
+                  trailing: const Icon(
+                    Icons.keyboard_arrow_right,
+                    color: Colors.grey,
+                    size: 30.0,
+                  ),
+                  contentPadding: const EdgeInsets.all(5.0),
+                );
               },
-              color: Colors.lightBlue,
-              child: const Text('GET'),
-            ),
-
-            //displays the data on the screen
-            Text(
-              finalResponse,
-              style: const TextStyle(fontSize: 24),
             )
           ],
         ),
