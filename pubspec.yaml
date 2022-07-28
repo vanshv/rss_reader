@@ -38,6 +38,7 @@ dependencies:
   url_launcher: ^6.1.5
   webfeed: ^0.7.0
   flutter_easyloading: ^3.0.5
+  cached_network_image: ^3.2.1
 
 dev_dependencies:
   flutter_test:
