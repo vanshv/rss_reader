@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'add_feed.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'itemdetail.dart';
 
 class Dashboard extends StatefulWidget {
   late Map allfeeds;
@@ -11,7 +12,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  static const String placeholderImg = 'images/no_image.png';
+  static const String placeholderImg = 'assets/images/no_image.png';
   // late Map converted;
 
   @override
@@ -36,10 +37,18 @@ class _DashboardState extends State<Dashboard> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ListView.builder(
-              itemCount: widget.allfeeds.length,
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: widget.allfeeds["itemcount"],
               itemBuilder: (BuildContext context, int index) {
                 final item = widget.allfeeds['entries'].elementAt(index);
                 return ListTile(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ItemDetail(item: item)));
+                  },
                   title: Text(
                     item['title'],
                     style: const TextStyle(
@@ -48,7 +57,7 @@ class _DashboardState extends State<Dashboard> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(
-                    item['subtitle'],
+                    item['summary'] ?? "isnull",
                     style: const TextStyle(
                         fontSize: 14.0, fontWeight: FontWeight.w100),
                     maxLines: 1,
@@ -59,7 +68,9 @@ class _DashboardState extends State<Dashboard> {
                     child: CachedNetworkImage(
                       placeholder: (context, url) =>
                           Image.asset(placeholderImg),
-                      imageUrl: item['enclosure']['url'],
+                      imageUrl: (item["enclosure"] == null)
+                          ? "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/1024px-No_image_available.svg.png"
+                          : item.enclosure.href[0],
                       height: 50,
                       width: 70,
                       alignment: Alignment.center,
